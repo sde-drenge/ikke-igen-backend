@@ -8,6 +8,7 @@ env
 easycheck/static_root/
 private_key.pem
 ./easycheck/settings/secrets/*
+./easycheck/static_root
 *.pem
 
 *.DS_Store
