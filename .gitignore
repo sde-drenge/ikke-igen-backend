@@ -4,11 +4,10 @@ venv
 *.cpython-311.pyc
 env
 
-./easycheck/static_root/*
-easycheck/static_root/
+./ikkeigen/static_root/*
+ikkeigen/static_root/
 private_key.pem
-./easycheck/settings/secrets/*
-./easycheck/static_root
+./ikkeigen/settings/secrets/*
 *.pem
 
 *.DS_Store
