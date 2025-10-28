@@ -56,7 +56,7 @@ class CustomTokenAuthentication(authentication.BaseAuthentication):
             msg = _("Invalid Login Credentials")
             raise exceptions.AuthenticationFailed(msg)
 
-        if not user.is_active:
+        if not user.isActive:
             msg = _("User is not verified")
             raise exceptions.AuthenticationFailed(msg)
 

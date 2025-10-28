@@ -155,6 +155,7 @@ REST_FRAMEWORK = {
 CUSTOM_APPS = [
     "users",
     "workplaces",
+    "schools",
 ]
 
 
@@ -222,10 +223,6 @@ DATABASES = {
         "PASSWORD": os.environ.get("DB_PASS", "ikkeigen"),
         "HOST": os.environ.get("DB_SERVICE", "localhost"),
         "PORT": os.environ.get("DB_PORT", "5432"),
-    },
-    "sandbox": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "sandbox.sqlite3",
     },
 }
 

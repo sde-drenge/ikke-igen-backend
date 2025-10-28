@@ -35,6 +35,7 @@ urlpatterns = [
     ),
     # My Paths
     re_path(r"^users/", include(("users.urls", "user"), namespace="user")),
+    re_path(r"^schools/", include(("schools.urls", "schools"), namespace="schools")),
     re_path(
         r"^workplaces/",
         include(("workplaces.urls", "workplaces"), namespace="workplaces"),

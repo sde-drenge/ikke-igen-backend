@@ -47,6 +47,12 @@ class User(AbstractUser, BaseModel):
     firstName = models.CharField(max_length=64, blank=True)
     lastName = models.CharField(max_length=64, blank=True)
 
+    education = models.CharField(
+        max_length=128,
+        blank=True,
+        null=True,
+    )
+
     isActive = models.BooleanField(default=False)
     isStaff = models.BooleanField(default=False)
 
@@ -55,6 +61,16 @@ class User(AbstractUser, BaseModel):
 
     profileColor = models.CharField(
         max_length=32, null=False, blank=False, default=randomColor
+    )
+
+    role = models.CharField(
+        max_length=16,
+        choices=[
+            ("student", "Student"),
+            ("teacher", "Teacher"),
+            ("admin", "Admin"),
+        ],
+        default="student",
     )
 
     EMAIL_FIELD = "email"
@@ -90,7 +106,7 @@ def createSuperuser(email, password):
     user = User.objects.create(
         email=email,
         is_staff=True,
-        is_active=True,
+        isActive=True,
         is_superuser=True,
     )
     user.set_password(password)

@@ -28,6 +28,30 @@ def get_urls():
 
     urls.append(
         re_path(
+            r"^(?P<workplaceUuid>\w+)/review/$",
+            views.RequestWorkplaceReviewView.as_view(),
+            name="review_workplace",
+        )
+    )
+
+    urls.append(
+        re_path(
+            r"^unverified-reviews/$",
+            views.GetUnverifiedReviewsView.as_view(),
+            name="get_unverified_reviews",
+        )
+    )
+
+    urls.append(
+        re_path(
+            r"^verify-review/$",
+            views.VerifyWorkplaceReviewView.as_view(),
+            name="verify_workplace_review",
+        )
+    )
+
+    urls.append(
+        re_path(
             r"^(?P<workplaceUuid>\w+)/$",
             views.GetWorkplaceView.as_view(),
             name="get_workplace",

@@ -24,6 +24,8 @@ class UserSerializer(serializers.ModelSerializer):
             "phoneNumber",
             "firstName",
             "lastName",
+            "education",
+            "role",
             "profileColor",
             "isActive",
             "createdAt",
@@ -62,6 +64,8 @@ class LightUserSerializer(UserSerializer):
             "firstName",
             "lastName",
             "email",
+            "role",
+            "education",
             "profileColor",
         )
 
@@ -83,7 +87,3 @@ class UserCreatorSerializer(UserSerializer):
             )
 
         return email
-
-    def create(self, validated_data):
-        validated_data["terms_and_privacy_accepted"] = timezone.now()
-        return super().create(validated_data)

@@ -10,6 +10,7 @@ from django.utils.translation import gettext as _
 from rest_framework import exceptions, status, views
 from rest_framework.generics import UpdateAPIView
 from users.auth import CustomTokenAuthentication
+from users.permissions import UserPermissions
 
 from .decrytper import RequestTimeLoggingMiddleware
 
@@ -42,32 +43,17 @@ class GlobalExceptionMiddleware(MiddlewareMixin):
         return None
 
 
-class CustomAPIView(RequestTimeLoggingMiddleware):
+class CustomAPIView(UserPermissions, RequestTimeLoggingMiddleware):
     authentication_classes = (CustomTokenAuthentication,)
     authenticationRequired = True
     allowUnacceptedPrivacyPolicy = False
+    roleNeeded = None
+    noPermissionForMethods = []
 
     def __init__(self, **kwargs) -> None:
         if self.authenticationRequired == False:
             self.permission_classes = ()
         super().__init__(**kwargs)
-
-    def initial(self, request, *args, **kwargs):
-        """
-        Dispatches the request and handles any exceptions that occur.
-        """
-        super().initial(request, *args, **kwargs)
-
-        user = request.user
-        if user and user.is_authenticated:
-            if not self.allowUnacceptedPrivacyPolicy:
-                # Check if user has accepted the newest privacy policy
-                if not user.terms_and_privacy_accepted:
-                    raise PermissionDenied(
-                        _(
-                            "You must accept the privacy policy and terms and conditions to access this resource."
-                        )
-                    )
 
     @property
     def language(self):

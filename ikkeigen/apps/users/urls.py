@@ -26,6 +26,22 @@ def get_urls():
         )
     )
 
+    urls.append(
+        re_path(
+            r"^verify-user/(?P<userUuid>\w+)/$",
+            views.VerifyUserView.as_view(),
+            name="verify_user_view",
+        )
+    )
+
+    urls.append(
+        re_path(
+            r"^update/$",
+            views.UpdateUserView.as_view(),
+            name="update_user_view",
+        )
+    )
+
     return urls
 
 
