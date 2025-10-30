@@ -15,6 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
     profileColor = serializers.CharField(
         read_only=True,
     )
+    schoolName = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -25,6 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
             "firstName",
             "lastName",
             "education",
+            "schoolName",
             "role",
             "profileColor",
             "isActive",
@@ -54,6 +56,13 @@ class UserSerializer(serializers.ModelSerializer):
             )
 
         return email
+
+    def get_schoolName(self, obj: User) -> str | None:
+        school = obj.schools.first()
+        if not school:
+            return None
+
+        return school.name
 
 
 class LightUserSerializer(UserSerializer):

@@ -68,6 +68,7 @@ class User(AbstractUser, BaseModel):
         choices=[
             ("student", "Student"),
             ("teacher", "Teacher"),
+            ("teacher-admin", "Teacher Admin"),
             ("admin", "Admin"),
         ],
         default="student",

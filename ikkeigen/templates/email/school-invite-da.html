@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Du er blevet inviteret til {{ schoolName }}</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f7f9fc;
+        margin: 0;
+        padding: 0;
+        color: #2e3a59;
+      }
+      .container {
+        max-width: 500px;
+        margin: 50px auto;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+      .header {
+        background-color: #007bff;
+        color: #ffffff;
+        text-align: center;
+        padding: 25px;
+        font-size: 24px;
+        font-weight: bold;
+      }
+      .content {
+        padding: 30px;
+        text-align: center;
+      }
+      .content p {
+        margin: 10px 0;
+        line-height: 1.6;
+        font-size: 16px;
+      }
+      .cta-button {
+        font-size: 18px;
+        font-weight: bold;
+        color: #ffffff !important;
+        background: #007bff;
+        padding: 15px 30px;
+        border-radius: 8px;
+        display: inline-block;
+        margin: 20px 0;
+        text-decoration: none;
+        box-shadow: 0 4px 10px rgba(0, 86, 179, 0.2);
+      }
+      .cta-button:hover {
+        background: #0056b3;
+        color: #ffffff !important;
+      }
+      .footer {
+        background-color: #f0f4f8;
+        color: #7a869a;
+        text-align: center;
+        padding: 15px;
+        font-size: 12px;
+      }
+      .footer a {
+        color: #007bff;
+        text-decoration: none;
+      }
+      .footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">{{ inviteeName }} har sendt dig en invitation</div>
+      <div class="content">
+        <p>Hej, <strong>{{ name }}</strong></p>
+        <p>
+          Du er blevet inviteret som lære til skolen
+          <strong>{{schoolName}}</strong> i på "ikkeigen.dk"!
+        </p>
+        <p>
+          Klik på knappen nedenfor, eller gå til dine notifikationer på
+          EasyCheck for at acceptere invitationen og begynde at samarbejde.
+        </p>
+        <a href="{{invitationLink}}" class="cta-button">Accepter invitation</a>
+
+        <p>
+          Hvis du ikke forventede denne invitation, kan du roligt ignorere denne
+          e-mail.
+        </p>
+      </div>
+      <div class="footer">
+        &copy; 2025 ikkeigen A/S. Har du brug for hjælp?
+        <a href="https://ikkeigen.dk/contact">Kontakt os</a><br /><br />
+        ikkeigen.dk <a href="https://ikkeigen.dk/">Hjemmeside</a><br /><br />
+        Af ikkeigen<br />
+      </div>
+    </div>
+  </body>
+</html>

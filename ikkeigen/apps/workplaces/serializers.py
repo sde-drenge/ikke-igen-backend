@@ -3,7 +3,15 @@ from django.db.models import Avg
 from rest_framework import serializers
 from users.serializers import LightUserSerializer, UserSerializer
 
-from .models import Review, Workplace
+from .models import Category, Review, Workplace
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = [
+            "name",
+        ]
 
 
 class WorkplaceSerializer(serializers.ModelSerializer):
@@ -12,6 +20,7 @@ class WorkplaceSerializer(serializers.ModelSerializer):
     updatedAt = serializers.DateTimeField(read_only=True)
     stars = serializers.SerializerMethodField()
     amountOfReviews = serializers.SerializerMethodField()
+    categories = CategorySerializer(many=True, read_only=True)
 
     class Meta:
         model = Workplace
@@ -22,6 +31,7 @@ class WorkplaceSerializer(serializers.ModelSerializer):
             "vat",
             "website",
             "amountOfReviews",
+            "categories",
             "createdAt",
             "updatedAt",
         ]
@@ -37,6 +47,8 @@ class WorkplaceSerializer(serializers.ModelSerializer):
         ).aggregate(averageStars=Avg("stars"))
         averageStars = reviews["averageStars"] or 0
 
+        # Rounding up
+        averageStars = round(averageStars * 2) / 2
         cache.set(cacheKey, averageStars, timeout=900)
         return averageStars
 
@@ -63,6 +75,7 @@ class LightWorkplaceSerializer(WorkplaceSerializer):
             "stars",
             "name",
             "website",
+            "categories",
             "amountOfReviews",
         ]
 

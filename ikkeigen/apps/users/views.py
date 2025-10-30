@@ -16,7 +16,7 @@ from settings.middleware.error_handling import CustomAPIView
 
 from .models import User
 from .serializers import UserCreatorSerializer, UserSerializer
-from .utils import generateVerificationId
+from .utils import generateVerificationId, sendVerificationEmail
 
 
 class BasicPageination(PageNumberPagination):
@@ -40,6 +40,16 @@ class BasicPageination(PageNumberPagination):
                 ]
             )
         )
+
+    def getPageNumber(self, request):
+        page_number = request.query_params.get(self.page_query_param, 1)
+        try:
+            page_number = int(page_number)
+        except (TypeError, ValueError):
+            page_number = 1
+        if page_number < 1:
+            page_number = 1
+        return page_number
 
     def paginate(self, queryset, request, context=None, **args):
         page = self.paginate_queryset(queryset.distinct(), request)
@@ -108,6 +118,7 @@ class SignUpView(CustomAPIView):
             user.set_password(password)
 
             user.verificationCode = generateVerificationId()
+            sendVerificationEmail(user)
 
             user.save()
             responseData = self.serializer_class(user).data
@@ -257,3 +268,17 @@ class UpdateUserView(
         return Response(
             {"error": serializer.error_messages}, status=status.HTTP_400_BAD_REQUEST
         )
+
+
+class GetCurrentUserView(CustomAPIView):
+    """
+    <GET> Returns current User
+    """
+
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserSerializer
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        responseData = self.serializer_class(user).data
+        return Response(data=responseData, status=status.HTTP_200_OK)

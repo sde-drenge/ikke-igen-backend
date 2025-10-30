@@ -28,9 +28,41 @@ def get_urls():
 
     urls.append(
         re_path(
+            r"^my-school/teachers/$",
+            views.GetTeachersFromSchoolView.as_view(),
+            name="get_teachers_from_school",
+        )
+    )
+
+    urls.append(
+        re_path(
             r"^add-teacher/$",
             views.AddTeacherToSchool.as_view(),
             name="add_teacher_to_school",
+        )
+    )
+
+    urls.append(
+        re_path(
+            r"^teachers/(?P<userUuid>\w+)/remove/$",
+            views.RemoveTeacherFromSchool.as_view(),
+            name="remove_teacher_from_school",
+        )
+    )
+
+    urls.append(
+        re_path(
+            r"^(?P<inviteUuid>\w+)/is-teacher/$",
+            views.CheckIfTeacherAtSchoolView.as_view(),
+            name="check_if_teacher_at_school",
+        )
+    )
+
+    urls.append(
+        re_path(
+            r"^(?P<inviteUuid>\w+)/accept/$",
+            views.AcceptInviteView.as_view(),
+            name="accept_invite",
         )
     )
 

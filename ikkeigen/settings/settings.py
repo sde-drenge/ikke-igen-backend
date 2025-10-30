@@ -300,21 +300,19 @@ SWAGGER_SETTINGS = {
 }
 
 
-# EMAIL_BACKEND = "django_ses.SESBackend"
-# AWS_SES_REGION_NAME = os.getenv("AWS_SES_REGION_NAME", "eu-north-1")
-# AWS_SES_REGION_ENDPOINT = os.getenv(
-#     "AWS_SES_REGION_ENDPOINT", "email.eu-west-1.amazonaws.com"
-# )
-# AWS_SES_ACCESS_KEY_ID = os.getenv("AWS_SES_ACCESS_KEY_ID", "")
-# AWS_SES_SECRET_ACCESS_KEY = os.getenv("AWS_SES_SECRET_ACCESS_KEY", "")
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "")  # e.g. docker service name
+EMAIL_PORT = int(
+    os.environ.get("EMAIL_PORT", 587)
+)  # 587 for STARTTLS, 465 for SSL, 25 for plain
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")  # username or blank for unauth
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = (
+    os.environ.get("EMAIL_USE_TLS", "True") == "True"
+)  # STARTTLS (common on 587)
+EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL", "False") == "True"  # only if using 465
+EMAIL_TIMEOUT = int(os.environ.get("EMAIL_TIMEOUT", 10))
 
-
-# EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
-# ANYMAIL = {
-#     "MAILGUN_API_KEY": DEFAULTSETTINGS.get("MAILGUN_API_KEY"),
-#     "MAILGUN_SENDER_DOMAIN": "IKKEIGEN.dk",
-#     "MAILGUN_API_URL": "https://api.eu.mailgun.net/v3",
-# }
 
 DEFAULT_FROM_EMAIL = "no-reply@ikkeigen.dk"
 SERVER_EMAIL = "no-reply@ikkeigen.dk"

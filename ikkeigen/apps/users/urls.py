@@ -42,6 +42,14 @@ def get_urls():
         )
     )
 
+    urls.append(
+        re_path(
+            r"^current/$",
+            views.GetCurrentUserView.as_view(),
+            name="current_user_view",
+        )
+    )
+
     return urls
 
 

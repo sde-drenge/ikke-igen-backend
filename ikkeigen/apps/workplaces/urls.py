@@ -44,9 +44,17 @@ def get_urls():
 
     urls.append(
         re_path(
-            r"^verify-review/$",
+            r"^reviews/(?P<reviewUuid>\w+)/verify/$",
             views.VerifyWorkplaceReviewView.as_view(),
             name="verify_workplace_review",
+        )
+    )
+
+    urls.append(
+        re_path(
+            r"^reviews/(?P<reviewUuid>\w+)/decline/$",
+            views.DeclineWorkplaceReviewView.as_view(),
+            name="decline_workplace_review",
         )
     )
 
@@ -55,6 +63,14 @@ def get_urls():
             r"^(?P<workplaceUuid>\w+)/$",
             views.GetWorkplaceView.as_view(),
             name="get_workplace",
+        )
+    )
+
+    urls.append(
+        re_path(
+            r"^(?P<workplaceUuid>\w+)/reviews/$",
+            views.GetWorkplaceReviewsView.as_view(),
+            name="get_workplace_reviews",
         )
     )
 

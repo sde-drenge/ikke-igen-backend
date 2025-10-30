@@ -5,10 +5,18 @@ from django.dispatch import receiver
 from users.models import BaseModel, User
 
 
+class Category(BaseModel):
+    name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Workplace(BaseModel):
     name = models.CharField(max_length=255, unique=True)
     vat = models.CharField(max_length=50, blank=True, null=True)
     website = models.URLField(blank=True, null=True)
+    categories = models.ManyToManyField(Category, related_name="workplaces", blank=True)
 
     def __str__(self):
         return f"{self.name} - {self.vat}"
@@ -37,6 +45,18 @@ class Review(BaseModel):
     def __str__(self):
         return f"Review by {self.author} for {self.workplace}: {self.stars} stars"
 
+    def deleteCache(self):
+        workplace: Workplace = self.workplace
+
+        cacheKeys = [
+            f"workplace:{workplace.pk}:AverageStars",
+            f"workplace:{workplace.pk}:amountOfReviews",
+            f"workplace:{workplace.pk}:reviews:page:1",
+        ]
+
+        for cachekey in cacheKeys:
+            cache.delete(cachekey)
+
 
 @receiver(pre_save, sender=Review)
 def deleteCacheOnReviewChange(sender, instance=None, **kwargs):
@@ -60,7 +80,4 @@ def deleteCacheOnReviewChange(sender, instance=None, **kwargs):
             break
 
     # Updating workplace stars
-    workplace: Workplace = instance.workplace
-    cacheKey = f"workplace:{workplace.pk}:AverageStars"
-    cacheKey = f"workplace:{workplace.pk}:amountOfReviews"
-    cache.delete(cacheKey)
+    review.deleteCache()

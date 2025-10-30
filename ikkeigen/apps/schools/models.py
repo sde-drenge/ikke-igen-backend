@@ -20,3 +20,21 @@ class School(BaseModel):
 
     def __str__(self):
         return self.name
+
+
+class TeacherInvite(BaseModel):
+    email = models.EmailField()
+    school = models.ForeignKey(
+        School,
+        on_delete=models.CASCADE,
+        related_name="teacherInvites",
+    )
+    invitedBy = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="sentTeacherInvites",
+    )
+    accepted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Invite for {self.email} to {self.school.name}"
