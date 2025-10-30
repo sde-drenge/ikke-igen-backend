@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  django:
+    build: .
+    container_name: django
+    env_file: .env
+    command: >
+      sh -c "python ikkeigen/manage.py migrate &&
+             python ikkeigen/manage.py collectstatic --noinput &&
+             cd ikkeigen &&
+             gunicorn settings.wsgi:application --bind 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
