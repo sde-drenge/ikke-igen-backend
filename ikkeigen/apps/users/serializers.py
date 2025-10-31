@@ -1,6 +1,7 @@
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
+from typing import Union
 
 from .models import User
 
@@ -57,7 +58,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         return email
 
-    def get_schoolName(self, obj: User) -> str | None:
+    def get_schoolName(self, obj: User) -> Union[str, None]:
         school = obj.schools.first()
         if not school:
             return None
