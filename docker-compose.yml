@@ -14,3 +14,18 @@ services:
       - .:/app
     ports:
       - "8000:8000"
+    networks:
+      - private_net
+      - mail_net
+      - public_net
+
+networks:
+  private_net:
+    external: true
+    name: private_net
+  mail_net:
+    external: true
+    name: mail_net
+  public_net:
+    external: true
+    name: public_net
