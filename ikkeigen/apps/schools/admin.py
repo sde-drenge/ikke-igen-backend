@@ -77,6 +77,7 @@ class TeacherInviteAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
         "invitedUser",
         "school",
         "invitedBy",
+        "accept",
         "accepted",
         "deletedAt",
         "updatedAt",
@@ -87,6 +88,7 @@ class TeacherInviteAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
     ordering = ("-createdAt",)
 
     readonly_fields = [
+        "accept",
         "invitedUser",
         "updatedAt",
         "createdAt",
@@ -117,6 +119,19 @@ class TeacherInviteAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
 
     invitedUser.allow_tags = True
     invitedUser.short_description = "Invited User"
+
+    @mark_safe
+    def accept(self, obj: TeacherInvite):
+        html = "<ul>"
+
+        html += '<li><a href="{0}">{1}</a></li>'.format(
+            obj.acceptLink(),
+            "Accept Invite Link",
+        )
+        return html + "</ul>"
+
+    accept.allow_tags = True
+    accept.short_description = "Accept Link"
 
 
 admin.site.register(School, SchoolAdmin)

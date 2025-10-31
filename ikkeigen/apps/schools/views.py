@@ -126,13 +126,12 @@ class AddTeacherToSchool(CustomAPIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-        if not newTeacher:
-            teacherInvite = TeacherInvite.objects.create(
-                email=userEmail,
-                school=school,
-                invitedBy=user,
-            )
-            sendSchoolInviteEmail(teacherInvite)
+        teacherInvite = TeacherInvite.objects.create(
+            email=userEmail,
+            school=school,
+            invitedBy=user,
+        )
+        sendSchoolInviteEmail(teacherInvite)
 
         return Response(
             {"detail": "Brugeren er nu inviteret som lærer på skolen."},

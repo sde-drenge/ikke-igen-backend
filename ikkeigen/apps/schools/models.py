@@ -38,3 +38,6 @@ class TeacherInvite(BaseModel):
 
     def __str__(self):
         return f"Invite for {self.email} to {self.school.name}"
+
+    def acceptLink(self):
+        return f"https://ikkeigen.dk/api/accept-invite/{self.uuid.hex}"
