@@ -29,7 +29,7 @@ def sendVerificationEmail(user: User):
             "email/email-verification-da.html",
             {
                 "user": user,
-                "verificationCode": verificationCode,
+                "verifyCode": verificationCode,
             },
         )
 
