@@ -54,7 +54,6 @@ class User(AbstractUser, BaseModel):
     )
 
     isActive = models.BooleanField(default=False)
-    isStaff = models.BooleanField(default=False)
 
     verificationEmailSentAt = models.DateTimeField(blank=True, null=True)
     verificationCode = models.CharField(max_length=6, null=True, blank=True)

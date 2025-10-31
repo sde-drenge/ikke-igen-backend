@@ -46,7 +46,7 @@ class UserAdmin(DjangoQLSearchMixin, BaseUserAdmin):
             {
                 "fields": (
                     "isActive",
-                    "isStaff",
+                    "is_staff",
                     "is_superuser",
                     "role",
                     "uuid_hex",
