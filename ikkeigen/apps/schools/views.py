@@ -239,6 +239,9 @@ class AcceptInviteView(CustomAPIView):
         teacherInvite.accepted = True
         teacherInvite.save()
 
+        user.role = "teacher"
+        user.save()
+
         return Response(
             {"detail": "Du er nu tilføjet som lærer på skolen."},
             status=status.HTTP_200_OK,
