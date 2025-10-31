@@ -330,10 +330,11 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "https://ikkeigen.dk",
+    "https://backend.ikkeigen.dk",
     "http://10.130.67.42:8000",
 ]
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
-    "https://ikkeigen.dk",
+    "https://backend.ikkeigen.dk",
     "http://10.130.67.42:8000",
 ]
