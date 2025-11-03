@@ -1,6 +1,6 @@
 from django.db.models.query import QuerySet
 
-from workplaces.models import Category, Workplace
+from workplaces.models import Category, TopCategory, Workplace
 
 
 def categoryExistAsTopCategory(
@@ -51,7 +51,23 @@ def getWorkplaceTopCategories():
             filteredTopCategories.append(topCategory)
     topCategories = filteredTopCategories
 
-    for topCategories in topCategories:
-        print(f"# {topCategories['name']}")
-        print("Categories:\n  - " + "\n  - ".join(topCategories["categories"]))
-        print("\n\n\n\n")
+    return topCategories
+
+
+def createTopCategoriesFromWorkplaces():
+    topCategoriesData = getWorkplaceTopCategories()
+
+    print("Creating TopCategories from workplaces...")
+    for topCategoryData in topCategoriesData:
+        categories = []
+        for categoryName in topCategoryData["categories"]:
+            category, created = Category.objects.get_or_create(name=categoryName)
+            categories.append(category)
+
+        topCategory, created = TopCategory.objects.get_or_create(
+            name=topCategoryData["name"]
+        )
+        topCategory.categories.set(categories)
+        topCategory.save()
+        print(f"Created/Updated TopCategory: {topCategory.name}")
+    print("Done creating TopCategories from workplaces.")

@@ -3,14 +3,30 @@ from django.db.models import Avg
 from rest_framework import serializers
 from users.serializers import LightUserSerializer, UserSerializer
 
-from .models import Category, Review, Workplace
+from .models import Category, Review, TopCategory, Workplace
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    uuid = serializers.UUIDField(read_only=True, format="hex")
+
     class Meta:
         model = Category
         fields = [
             "name",
+            "uuid",
+        ]
+
+
+class TopCategorySerializer(serializers.ModelSerializer):
+    uuid = serializers.UUIDField(read_only=True, format="hex")
+    categories = CategorySerializer(many=True, read_only=True)
+
+    class Meta:
+        model = TopCategory
+        fields = [
+            "name",
+            "categories",
+            "uuid",
         ]
 
 

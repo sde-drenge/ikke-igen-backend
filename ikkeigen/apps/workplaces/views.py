@@ -9,8 +9,13 @@ from settings.middleware.error_handling import CustomAPIView
 from users.models import User
 from users.views import BasicPageination
 
-from .models import Review, Workplace
-from .serializers import LightWorkplaceSerializer, ReviewSerializer, WorkplaceSerializer
+from .models import Review, TopCategory, Workplace
+from .serializers import (
+    LightWorkplaceSerializer,
+    ReviewSerializer,
+    TopCategorySerializer,
+    WorkplaceSerializer,
+)
 from .utils import createWorkplaceByVATNumber
 
 
@@ -18,6 +23,7 @@ class SearchWorkPlacesView(CustomAPIView, BasicPageination):
     """
     <GET> returns paginatied list of workplaces
     ?search=<str>
+    ?categoryUuid=<uuid>
     """
 
     serializer_class = LightWorkplaceSerializer
@@ -27,11 +33,17 @@ class SearchWorkPlacesView(CustomAPIView, BasicPageination):
     def get(self, request, *args, **kwargs):
         search = request.GET.get("search", "")
 
-        workplaces = Workplace.objects.filter(
+        filter = (
             Q(name__icontains=search, deletedAt__isnull=True)
             | Q(vat__icontains=search, deletedAt__isnull=True)
             | Q(website__icontains=search, deletedAt__isnull=True)
         )
+
+        categoryUuid = request.GET.get("categoryUuid", None)
+        if categoryUuid:
+            filter &= Q(categories__uuid=categoryUuid, deletedAt__isnull=True)
+
+        workplaces = Workplace.objects.filter(filter)
 
         if not workplaces.exists():
             createdNew = createWorkplaceByVATNumber(search)
@@ -205,6 +217,7 @@ class DeclineWorkplaceReviewView(CustomAPIView):
 class GetWorkplaceReviewsView(CustomAPIView, BasicPageination):
     """
     <GET> returns a paginatied list of workplace reviews
+    ?stars=<int>
     """
 
     serializer_class = ReviewSerializer
@@ -212,22 +225,53 @@ class GetWorkplaceReviewsView(CustomAPIView, BasicPageination):
     permission_classes = []
 
     def get(self, request, *args, **kwargs):
+        stars = request.GET.get("stars", "all")
         workplaceUuid = kwargs.get("workplaceUuid")
         workplace = get_object_or_404(
             Workplace, uuid=workplaceUuid, deletedAt__isnull=True
         )
 
         cacheKey = f"workplace:{workplace.pk}:reviews:page:1"
-        if self.getPageNumber(request) == 1:
-            cachedData = cache.get(cacheKey)
-            if cachedData:
-                return Response(data=cachedData, status=status.HTTP_200_OK)
+        if stars == "all":
+            if self.getPageNumber(request) == 1:
+                cachedData = cache.get(cacheKey)
+                if cachedData:
+                    return Response(data=cachedData, status=status.HTTP_200_OK)
 
-        reviews = Review.objects.filter(
+        filter = Q(
             workplace=workplace, deletedAt__isnull=True, verifiedBy__isnull=False
-        ).order_by("-createdAt")
+        )
+        if stars and stars != "all":
+            filter &= Q(stars=stars)
+
+        reviews = Review.objects.filter(filter).order_by("-createdAt")
 
         paginated = self.paginate(reviews, request)
-        if self.getPageNumber(request) == 1:
+        if self.getPageNumber(request) == 1 and stars == "all":
             cache.set(cacheKey, paginated.data, timeout=60 * 10)  # Cache for 10 minutes
         return Response(data=paginated.data, status=status.HTTP_200_OK)
+
+
+class GetCategoriesView(CustomAPIView, BasicPageination):
+    """
+    <GET> returns a list of workplace categories
+    """
+
+    authentication_classes = []
+    permission_classes = []
+
+    serializer_class = TopCategorySerializer
+
+    def get(self, request, *args, **kwargs):
+        cacheKey = "workplace:categories"
+        cachedData = cache.get(cacheKey)
+        if cachedData:
+            return Response(data=cachedData, status=status.HTTP_200_OK)
+
+        categories = TopCategory.objects.filter(deletedAt__isnull=True).order_by(
+            "-name"
+        )
+        serializer = self.serializer_class(categories, many=True)
+
+        cache.set(cacheKey, serializer.data, timeout=60 * 10)  # Cache for 10 minutes
+        return Response(data=serializer.data, status=status.HTTP_200_OK)

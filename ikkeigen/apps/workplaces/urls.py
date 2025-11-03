@@ -12,6 +12,14 @@ def get_urls():
 
     urls.append(
         re_path(
+            r"^categories/$",
+            views.GetCategoriesView.as_view(),
+            name="get_categories",
+        )
+    )
+
+    urls.append(
+        re_path(
             r"^find/$",
             views.SearchWorkPlacesView.as_view(),
             name="search_workplaces",

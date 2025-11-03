@@ -3,16 +3,67 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from djangoql.admin import DjangoQLSearchMixin
 
-from .models import Category, Review, Workplace
+from .models import Category, Review, TopCategory, Workplace
 
 
 class CategoryAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
     list_display = ("pk", "name")
     fields = [
         "name",
+        "deletedAt",
+        "updatedAt",
+        "createdAt",
+        "uuid_hex",
     ]
 
-    ordering = ("-name",)
+    readonly_fields = [
+        "updatedAt",
+        "createdAt",
+        "uuid_hex",
+    ]
+
+    def uuid_hex(self, obj):
+        return obj.uuid.hex
+
+
+class TopCategoryAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
+    list_display = ("pk", "name")
+    fields = [
+        "name",
+        "allCategories",
+        "deletedAt",
+        "updatedAt",
+        "createdAt",
+        "uuid_hex",
+    ]
+
+    readonly_fields = [
+        "allCategories",
+        "updatedAt",
+        "createdAt",
+        "uuid_hex",
+    ]
+
+    def uuid_hex(self, obj):
+        return obj.uuid.hex
+
+    @mark_safe
+    def allCategories(self, obj: TopCategory):
+        html = "<ul>"
+
+        objs = obj.categories.all()
+        for obj in objs:
+            html += '<li><a href="{0}">{1}</a></li>'.format(
+                reverse(
+                    "admin:%s_%s_change" % (obj._meta.app_label, obj._meta.model_name),
+                    args=[obj.id],
+                ),
+                obj.__str__(),
+            )
+        return html + "</ul>"
+
+    allCategories.allow_tags = True
+    allCategories.short_description = "Categories"
 
 
 class WorkplaceAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
@@ -95,3 +146,4 @@ class ReviewAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
 admin.site.register(Workplace, WorkplaceAdmin)
 admin.site.register(Review, ReviewAdmin)
 admin.site.register(Category, CategoryAdmin)
+admin.site.register(TopCategory, TopCategoryAdmin)

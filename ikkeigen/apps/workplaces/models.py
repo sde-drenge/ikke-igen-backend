@@ -12,6 +12,16 @@ class Category(BaseModel):
         return self.name
 
 
+class TopCategory(BaseModel):
+    name = models.CharField(max_length=255, unique=True)
+    categories = models.ManyToManyField(
+        Category, related_name="top_categories", blank=True
+    )
+
+    def __str__(self):
+        return self.name
+
+
 class Workplace(BaseModel):
     name = models.CharField(max_length=255, unique=True)
     vat = models.CharField(max_length=50, blank=True, null=True)
@@ -58,6 +68,36 @@ class Review(BaseModel):
             cache.delete(cachekey)
 
 
+@receiver(pre_save, sender=Category)
+@receiver(pre_save, sender=TopCategory)
+def deleteCacheOnCategoryChange(sender, instance=None, **kwargs):
+    if not instance.pk:
+        return
+
+    category = sender.objects.filter(pk=instance.pk).first()
+    if not category:
+        return
+
+    fields = [
+        "name",
+        "top_categories",
+        "categories",
+        "deletedAt",
+    ]
+
+    hasImportantChange = False
+    for field in fields:
+        old_value = getattr(category, field)
+        new_value = getattr(instance, field)
+        if old_value != new_value:
+            hasImportantChange = True
+            break
+
+    if hasImportantChange:
+        cacheKey = "workplace:categories"
+        cache.delete(cacheKey)
+
+
 @receiver(pre_save, sender=Review)
 def deleteCacheOnReviewChange(sender, instance=None, **kwargs):
     if not instance.pk:
@@ -72,12 +112,16 @@ def deleteCacheOnReviewChange(sender, instance=None, **kwargs):
         "stars",
         "verifiedBy",
         "workplace",
+        "deletedAt",
     ]
+    hasImportantChange = False
     for field in fields:
         old_value = getattr(review, field)
         new_value = getattr(instance, field)
         if old_value != new_value:
+            hasImportantChange = True
             break
 
-    # Updating workplace stars
-    review.deleteCache()
+    if hasImportantChange:
+        # Updating workplace stars
+        review.deleteCache()
