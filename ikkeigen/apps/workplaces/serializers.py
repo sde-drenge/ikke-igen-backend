@@ -8,7 +8,24 @@ from .models import Category, Review, TopCategory, Workplace
 
 class CategorySerializer(serializers.ModelSerializer):
     uuid = serializers.UUIDField(read_only=True, format="hex")
+    topCategory = serializers.SerializerMethodField()
 
+    class Meta:
+        model = Category
+        fields = [
+            "name",
+            "uuid",
+            "topCategory",
+        ]
+
+    def get_topCategory(self, obj: Category):
+        topCategory = obj.top_categories.first()
+        if topCategory:
+            return LightTopCategorySerializer(topCategory).data
+        return None
+
+
+class LightCategorySerializer(CategorySerializer):
     class Meta:
         model = Category
         fields = [
@@ -19,13 +36,24 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class TopCategorySerializer(serializers.ModelSerializer):
     uuid = serializers.UUIDField(read_only=True, format="hex")
-    categories = CategorySerializer(many=True, read_only=True)
+    categories = LightCategorySerializer(many=True, read_only=True)
 
     class Meta:
         model = TopCategory
         fields = [
             "name",
             "categories",
+            "color",
+            "uuid",
+        ]
+
+
+class LightTopCategorySerializer(TopCategorySerializer):
+    class Meta:
+        model = TopCategory
+        fields = [
+            "name",
+            "color",
             "uuid",
         ]
 
@@ -45,7 +73,7 @@ class WorkplaceSerializer(serializers.ModelSerializer):
             "stars",
             "name",
             "vat",
-            "website",
+            "address",
             "amountOfReviews",
             "categories",
             "createdAt",
@@ -90,8 +118,7 @@ class LightWorkplaceSerializer(WorkplaceSerializer):
             "uuid",
             "stars",
             "name",
-            "website",
-            "categories",
+            "address",
             "amountOfReviews",
         ]
 

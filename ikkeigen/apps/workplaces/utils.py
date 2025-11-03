@@ -25,6 +25,7 @@ def createWorkplaceByVATNumber(vatNumber: str) -> None:
             vat = workplace.get("cvr")
             name = workplace.get("navn", "")
             brancher = workplace.get("brancher", [])
+            address = workplace.get("adresse", "")
 
             categories = []
             for category in brancher:
@@ -36,7 +37,7 @@ def createWorkplaceByVATNumber(vatNumber: str) -> None:
                 categories.append(categoryObj)
 
             workplaceObj, created = Workplace.objects.get_or_create(
-                vat=vat, defaults={"name": name}
+                vat=vat, address=address, defaults={"name": name}
             )
             workplaceObj.categories.set(categories)
             workplaceObj.save()

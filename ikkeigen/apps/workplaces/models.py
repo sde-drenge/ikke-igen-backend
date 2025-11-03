@@ -2,7 +2,7 @@ from django.core.cache import cache
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
-from users.models import BaseModel, User
+from users.models import BaseModel, User, randomColor
 
 
 class Category(BaseModel):
@@ -17,6 +17,9 @@ class TopCategory(BaseModel):
     categories = models.ManyToManyField(
         Category, related_name="top_categories", blank=True
     )
+    color = models.CharField(
+        max_length=32, null=False, blank=False, default=randomColor
+    )
 
     def __str__(self):
         return self.name
@@ -25,7 +28,7 @@ class TopCategory(BaseModel):
 class Workplace(BaseModel):
     name = models.CharField(max_length=255, unique=True)
     vat = models.CharField(max_length=50, blank=True, null=True)
-    website = models.URLField(blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
     categories = models.ManyToManyField(Category, related_name="workplaces", blank=True)
 
     def __str__(self):
@@ -87,11 +90,14 @@ def deleteCacheOnCategoryChange(sender, instance=None, **kwargs):
 
     hasImportantChange = False
     for field in fields:
-        old_value = getattr(category, field)
-        new_value = getattr(instance, field)
-        if old_value != new_value:
-            hasImportantChange = True
-            break
+        try:
+            old_value = getattr(category, field)
+            new_value = getattr(instance, field)
+            if old_value != new_value:
+                hasImportantChange = True
+                break
+        except Exception:
+            continue
 
     if hasImportantChange:
         cacheKey = "workplace:categories"

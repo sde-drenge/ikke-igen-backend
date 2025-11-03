@@ -9,8 +9,9 @@ from settings.middleware.error_handling import CustomAPIView
 from users.models import User
 from users.views import BasicPageination
 
-from .models import Review, TopCategory, Workplace
+from .models import Category, Review, TopCategory, Workplace
 from .serializers import (
+    CategorySerializer,
     LightWorkplaceSerializer,
     ReviewSerializer,
     TopCategorySerializer,
@@ -36,7 +37,7 @@ class SearchWorkPlacesView(CustomAPIView, BasicPageination):
         filter = (
             Q(name__icontains=search, deletedAt__isnull=True)
             | Q(vat__icontains=search, deletedAt__isnull=True)
-            | Q(website__icontains=search, deletedAt__isnull=True)
+            | Q(address__icontains=search, deletedAt__isnull=True)
         )
 
         categoryUuid = request.GET.get("categoryUuid", None)
@@ -51,7 +52,7 @@ class SearchWorkPlacesView(CustomAPIView, BasicPageination):
                 workplaces = Workplace.objects.filter(
                     Q(name__icontains=search, deletedAt__isnull=True)
                     | Q(vat__icontains=search, deletedAt__isnull=True)
-                    | Q(website__icontains=search, deletedAt__isnull=True)
+                    | Q(address__icontains=search, deletedAt__isnull=True)
                 )
 
         paginated = self.paginate(workplaces, request)
@@ -274,4 +275,23 @@ class GetCategoriesView(CustomAPIView, BasicPageination):
         serializer = self.serializer_class(categories, many=True)
 
         cache.set(cacheKey, serializer.data, timeout=60 * 10)  # Cache for 10 minutes
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+class GetCategoryView(CustomAPIView):
+    """
+    <GET> returns a category by uuid
+    """
+
+    authentication_classes = []
+    permission_classes = []
+
+    serializer_class = CategorySerializer
+
+    def get(self, request, *args, **kwargs):
+        categoryUuid = kwargs.get("categoryUuid")
+        category = get_object_or_404(
+            Category, uuid=categoryUuid, deletedAt__isnull=True
+        )
+        serializer = self.serializer_class(category)
         return Response(data=serializer.data, status=status.HTTP_200_OK)

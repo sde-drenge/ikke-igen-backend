@@ -31,6 +31,7 @@ class TopCategoryAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
     fields = [
         "name",
         "allCategories",
+        "color",
         "deletedAt",
         "updatedAt",
         "createdAt",
@@ -71,7 +72,7 @@ class WorkplaceAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
     fields = [
         "name",
         "vat",
-        "website",
+        "address",
         "allCategories",
         "deletedAt",
         "updatedAt",

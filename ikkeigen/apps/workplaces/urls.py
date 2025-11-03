@@ -20,6 +20,14 @@ def get_urls():
 
     urls.append(
         re_path(
+            r"^categories/(?P<categoryUuid>\w+)/$",
+            views.GetCategoryView.as_view(),
+            name="get_category",
+        )
+    )
+
+    urls.append(
+        re_path(
             r"^find/$",
             views.SearchWorkPlacesView.as_view(),
             name="search_workplaces",
