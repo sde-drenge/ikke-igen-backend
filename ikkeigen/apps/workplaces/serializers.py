@@ -64,6 +64,7 @@ class WorkplaceSerializer(serializers.ModelSerializer):
     updatedAt = serializers.DateTimeField(read_only=True)
     stars = serializers.SerializerMethodField()
     amountOfReviews = serializers.SerializerMethodField()
+    starsProcentages = serializers.SerializerMethodField()
     categories = CategorySerializer(many=True, read_only=True)
 
     class Meta:
@@ -75,6 +76,7 @@ class WorkplaceSerializer(serializers.ModelSerializer):
             "vat",
             "address",
             "amountOfReviews",
+            "starsProcentages",
             "categories",
             "createdAt",
             "updatedAt",
@@ -94,7 +96,37 @@ class WorkplaceSerializer(serializers.ModelSerializer):
         # Rounding up
         averageStars = round(averageStars * 2) / 2
         cache.set(cacheKey, averageStars, timeout=900)
-        return averageStars
+        return str(averageStars)
+
+    def get_starsProcentages(self, obj: Workplace):
+        cacheKey = f"workplace:{obj.pk}:starsProcentages"
+        cachedValue = cache.get(cacheKey)
+        if cachedValue is not None:
+            return cachedValue
+
+        data = {}
+        totalReviews = obj.reviews.filter(
+            deletedAt__isnull=True, verifiedBy__isnull=False
+        ).count()
+
+        starOptions = [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+        ]
+        for starOption in starOptions:
+            if totalReviews == 0:
+                data[starOption] = "0"
+                continue
+
+            count = obj.reviews.filter(
+                deletedAt__isnull=True, verifiedBy__isnull=False, stars=starOption
+            ).count()
+            data[starOption] = str(round((count / totalReviews) * 100))
+        cache.set(cacheKey, data, timeout=60 * 15)  # Cache for 15 minutes
+        return data
 
     def get_amountOfReviews(self, obj: Workplace):
         cacheKey = f"workplace:{obj.pk}:amountOfReviews"

@@ -65,6 +65,7 @@ class Review(BaseModel):
             f"workplace:{workplace.pk}:AverageStars",
             f"workplace:{workplace.pk}:amountOfReviews",
             f"workplace:{workplace.pk}:reviews:page:1",
+            f"workplace:{workplace.pk}:starsProcentages",
         ]
 
         for cachekey in cacheKeys:
