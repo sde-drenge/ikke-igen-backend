@@ -94,9 +94,9 @@ class WorkplaceSerializer(serializers.ModelSerializer):
         averageStars = reviews["averageStars"] or 0
 
         # Rounding up
-        averageStars = round(averageStars * 2) / 2
+        averageStars = str(round(averageStars * 2) / 2)
         cache.set(cacheKey, averageStars, timeout=900)
-        return str(averageStars)
+        return averageStars
 
     def get_starsProcentages(self, obj: Workplace):
         cacheKey = f"workplace:{obj.pk}:starsProcentages"
