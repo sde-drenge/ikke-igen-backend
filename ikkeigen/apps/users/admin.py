@@ -8,7 +8,6 @@ from djangoql.admin import DjangoQLSearchMixin
 from .models import User
 
 
-# class UserAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
 class UserAdmin(DjangoQLSearchMixin, BaseUserAdmin):
     search_fields = [
         "__str__",

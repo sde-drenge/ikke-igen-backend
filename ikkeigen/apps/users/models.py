@@ -61,6 +61,7 @@ class User(AbstractUser, BaseModel):
     profileColor = models.CharField(
         max_length=32, null=False, blank=False, default=randomColor
     )
+    profilePictureUrl = models.CharField(max_length=256, null=True, blank=True)
 
     role = models.CharField(
         max_length=16,

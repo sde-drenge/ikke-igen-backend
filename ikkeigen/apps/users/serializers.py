@@ -1,7 +1,8 @@
+from typing import Union
+
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
-from typing import Union
 
 from .models import User
 
@@ -30,6 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
             "schoolName",
             "role",
             "profileColor",
+            "profilePictureUrl",
             "isActive",
             "createdAt",
         )
@@ -76,6 +78,7 @@ class LightUserSerializer(UserSerializer):
             "email",
             "role",
             "education",
+            "profilePictureUrl",
             "profileColor",
         )
 
