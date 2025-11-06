@@ -78,6 +78,10 @@ class RemoveTeacherFromSchool(CustomAPIView):
 
         school.teachers.remove(teacherToRemove)
         school.save()
+
+        teacherToRemove.role = "student"
+        teacherToRemove.save()
+
         return Response(
             {"detail": "Brugeren er nu fjernet som lærer på skolen."},
             status=status.HTTP_200_OK,
